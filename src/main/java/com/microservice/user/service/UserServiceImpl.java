@@ -1,6 +1,5 @@
 package com.microservice.user.service;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -17,6 +16,7 @@ import com.microservice.user.entity.Hotel;
 import com.microservice.user.entity.Rating;
 import com.microservice.user.entity.User;
 import com.microservice.user.exception.ResourceNotFoundException;
+import com.microservice.user.externalservice.HotelService;
 import com.microservice.user.repository.UserRepository;
 
 @Service
@@ -27,6 +27,9 @@ public class UserServiceImpl implements UserService{
 	
 	@Autowired
 	private RestTemplate restTemplate;
+	
+	@Autowired
+	private HotelService hotelService;
 	
 	private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class); 
 	
@@ -53,9 +56,9 @@ public class UserServiceImpl implements UserService{
 		List<Rating> ratings = Arrays.stream(ratingforUser).toList();
 		
 		List<Rating> ratingList = ratings.stream().map(rating->{
-			ResponseEntity<Hotel> forEntity = restTemplate.getForEntity("http://HOTELSERVICE/hotel/getHotel/"+rating.getHotelId(), Hotel.class);
-			Hotel hotel = forEntity.getBody();
-			logger.info("Response Status Code {}", forEntity.getStatusCode());
+		//	ResponseEntity<Hotel> forEntity = restTemplate.getForEntity("http://HOTELSERVICE/hotel/getHotel/"+rating.getHotelId(), Hotel.class);
+			Hotel hotel = hotelService.getHotel(rating.getHotelId());
+		//	logger.info("Response Status Code {}", forEntity.getStatusCode());
 			rating.setHotel(hotel);
 			return rating;
 			
