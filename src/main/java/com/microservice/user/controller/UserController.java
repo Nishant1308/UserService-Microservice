@@ -16,10 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.microservice.user.entity.User;
 import com.microservice.user.service.UserService;
-import com.microservice.user.service.UserServiceImpl;
 
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 
 @RestController
 @RequestMapping("/user")
@@ -40,7 +38,8 @@ public class UserController {
 	
 	@GetMapping("/getUser/{userId}")
 //	@CircuitBreaker(name = "ratingHotelBreaker",fallbackMethod = "ratingHotelFallBackMethod")
-	@Retry(name = "ratingHotelBreaker", fallbackMethod = "ratingHotelFallBackMethod")
+//	@Retry(name = "ratingHotelBreaker", fallbackMethod = "ratingHotelFallBackMethod")
+	@RateLimiter(name = "userRateLimiter", fallbackMethod = "ratingHotelFallBackMethod")
 	public ResponseEntity<User> getSingleUser(@PathVariable("userId") String userId) {
 		logger.info("Retry Count :{}", retryCount);
 		retryCount++;
